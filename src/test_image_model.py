@@ -1,7 +1,7 @@
 import cv2
 from cvzone.ClassificationModule import Classifier
 from cvzone.HandTrackingModule import HandDetector
-from data.data_collection import center_Image
+from data.data_utils import center_Image
 
 
 # Opens camera feed and predicts the hand sign
