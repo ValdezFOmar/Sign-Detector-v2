@@ -31,24 +31,27 @@ def center_Image(img: any, hands: list):
         return template
 
     aspecRatio = crop_img_h / crop_img_w
-    # If the image is too tall, adjust the width
-    # and make the height = IMG_SIZE
-    if aspecRatio > 1:
-        scale = IMG_SIZE / crop_img_h
-        new_w = math.floor(scale * crop_img_w)
-        imgResized = cv2.resize(crop_img, (new_w, IMG_SIZE))
-        w_gap = (IMG_SIZE - new_w) // 2
-        template[:, w_gap : new_w + w_gap] = imgResized
-    # If the image is too wide, adjust the height
-    # and make the width = IMG_SIZE
-    else:
-        scale = IMG_SIZE / crop_img_w
-        new_h = math.floor(scale * crop_img_h)
-        imgResized = cv2.resize(crop_img, (IMG_SIZE, new_h))
-        h_gap = (IMG_SIZE - new_h) // 2
-        template[h_gap : new_h + h_gap,:] = imgResized
+    try:
+        # If the image is too tall, adjust the width
+        # and make the height = IMG_SIZE
+        if aspecRatio > 1:
+            scale = IMG_SIZE / crop_img_h
+            new_w = math.floor(scale * crop_img_w)
+            imgResized = cv2.resize(crop_img, (new_w, IMG_SIZE))
+            w_gap = (IMG_SIZE - new_w) // 2
+            template[:, w_gap : new_w + w_gap] = imgResized
+        # If the image is too wide, adjust the height
+        # and make the width = IMG_SIZE
+        else:
+            scale = IMG_SIZE / crop_img_w
+            new_h = math.floor(scale * crop_img_h)
+            imgResized = cv2.resize(crop_img, (IMG_SIZE, new_h))
+            h_gap = (IMG_SIZE - new_h) // 2
+            template[h_gap : new_h + h_gap,:] = imgResized
+        return template
     
-    return template
+    except ValueError:
+        return template # Returns blank image
 
 
 # Creates the directories for the collected data
