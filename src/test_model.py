@@ -35,10 +35,11 @@ def main():
         if hands:
             centeredImage = center_Image(img, hands)
             results, index = classifier.getPrediction(centeredImage)
-
             confidense = results[index]
             label = LABELS[index]
-            display_text = f"{label}    {int(confidense * 100)}%"
+            
+            prediction = f"'{label}' [{int(confidense * 100)}%]"
+            display_text = prediction if confidense > 0.5 else "No se reconoce"
         else:
             display_text = "No se detectan manos"
 
