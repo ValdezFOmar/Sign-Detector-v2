@@ -10,35 +10,48 @@ IMG_SIZE = 300
 # Centers the image on a white background
 def center_Image(img: any, hands: list):
     OFFSET = 20
-
     hand = hands[0]
-    x, y, w, h = hand["bbox"]
+    bbox_x, bbox_y, bbox_w, bbox_h = hand["bbox"]
 
-    white_bg = np.ones((IMG_SIZE, IMG_SIZE, 3), np.uint8) * 255
-    imgWhite = white_bg
+    template = np.ones((IMG_SIZE, IMG_SIZE, 3), np.uint8) * 255
+    
+    # Extract the image within this coordinates
+    y = bbox_y - OFFSET
+    h = bbox_y + bbox_h + OFFSET
+    x = bbox_x - OFFSET
+    w = bbox_x + bbox_w + OFFSET
+    crop_img = img[ y : h, x : w ]
+    
+    # Height and width of the crop image
+    crop_img_h = crop_img.shape[0]
+    crop_img_w = crop_img.shape[1]
+    
+    # One of the sides might not be properly defined
+    if crop_img_h <= 0 or crop_img_w <= 0:
+        return template
 
-    imgCrop = img[y - OFFSET : y + h + OFFSET, x - OFFSET : x + w + OFFSET]
+    aspecRatio = crop_img_h / crop_img_w
+    # If the image is too tall, adjust the width
+    # and make the height = IMG_SIZE
+    if aspecRatio > 1:
+        scale = IMG_SIZE / crop_img_h
+        new_w = math.floor(scale * crop_img_w)
+        imgResized = cv2.resize(crop_img, (new_w, IMG_SIZE))
+        w_gap = (IMG_SIZE - new_w) // 2
+        template[:, w_gap : new_w + w_gap] = imgResized
+    # If the image is too wide, adjust the height
+    # and make the width = IMG_SIZE
+    else:
+        scale = IMG_SIZE / crop_img_w
+        new_h = math.floor(scale * crop_img_h)
+        imgResized = cv2.resize(crop_img, (IMG_SIZE, new_h))
+        h_gap = (IMG_SIZE - new_h) // 2
+        template[h_gap : new_h + h_gap,:] = imgResized
+    
+    return template
 
-    aspecRatio = h / w
-    try:
-        if aspecRatio > 1:
-            k = IMG_SIZE / h
-            wCalc = math.ceil(k * w)
-            imgResized = cv2.resize(imgCrop, (wCalc, IMG_SIZE))
-            wGap = math.ceil((IMG_SIZE - wCalc) / 2)
-            imgWhite[:, wGap : wCalc + wGap] = imgResized
-        else:
-            k = IMG_SIZE / w
-            hCalc = math.ceil(k * h)
-            imgResized = cv2.resize(imgCrop, (IMG_SIZE, hCalc))
-            hGap = math.ceil((IMG_SIZE - hCalc) / 2)
-            imgWhite[hGap : hCalc + hGap, :] = imgResized
-    except cv2.error:  # The hand might not be properly resized
-        imgWhite = white_bg  # Set it to a white background
 
-    return imgWhite
-
-
+# Creates the directories for the collected data
 def make_dirs(path: str, sub_dirs: list[str]):
     for dir in sub_dirs:
         dir_path = os.path.join(path, dir)
@@ -55,7 +68,8 @@ def main():
     
     TOTAL_IMAGES = 200
     DATA_PATH = os.path.join("data","test")
-    SIGNS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
+    SIGNS = [
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
         'L', 'M','N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
         'X', 'Y', 'Z',
     ]
@@ -82,7 +96,7 @@ def main():
             thickness=4,                      
         )
         
-        cv2.imshow("Image", fliped_img)
+        cv2.imshow("Processing frames", fliped_img)
 
         key = cv2.waitKey(1)
         # Exit when 'q' is pressed or
