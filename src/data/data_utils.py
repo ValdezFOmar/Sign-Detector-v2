@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import math
 import os
-from cvzone.HandTrackingModule import HandDetector
+import sys
 
 
 # Centers the image on a white background
@@ -59,7 +59,7 @@ def make_dirs(path: str, sub_dirs: list[str]):
     print("Directories created")
 
 
-# Moves all the extra files to a extra dir
+# Moves all the extra files to an extra dir
 def trim_output(path: str, max_size: int):
     last_dir_name = path.split("/")[-1]
     new_dir_path = os.path.join("data", "extra", last_dir_name)

@@ -1,8 +1,8 @@
 import cv2
 import time
 import os
-from cvzone.HandTrackingModule import HandDetector
 from data_utils import center_Image, make_dirs
+from cvzone.HandTrackingModule import HandDetector
 
 
 # Script for data collection:
