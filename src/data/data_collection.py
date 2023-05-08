@@ -28,7 +28,8 @@ def main():
         hands, img = detector.findHands(img)
 
         if hands:
-            centeredImage = center_Image(img, hands)
+            # print(len(hands[0]["lmList"])) # 21 Landmasks total
+            centeredImage = center_Image(img, hands, OFFSET=10)
             cv2.imshow("Centered image", centeredImage)
 
         fliped_img = cv2.flip(img, 1)
@@ -40,7 +41,7 @@ def main():
             fontFace=cv2.FONT_HERSHEY_SIMPLEX,
             color=(255, 255, 255),
             fontScale=1,
-            thickness=4,                      
+            thickness=4,
         )
         
         cv2.imshow("Processing frames", fliped_img)

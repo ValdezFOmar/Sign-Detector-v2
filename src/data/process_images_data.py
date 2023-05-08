@@ -11,7 +11,7 @@ def process_img(img, detector: HandDetector, IMG_SIZE=300):
     hands, imgOutput = detector.findHands(img)
     if not hands:
         return None
-    centeredImage = center_Image(imgOutput, hands, IMG_SIZE=IMG_SIZE)
+    centeredImage = center_Image(imgOutput, hands, IMG_SIZE=IMG_SIZE, OFFSET=10)
     if np.array_equal(centeredImage, BLANK_IMAGE):
         return None
     return centeredImage
